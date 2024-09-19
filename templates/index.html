@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Salary Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Add background image */
+        body {
+            background-image: url('static/images/empimage.jfif'); /* Replace with actual path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Styling the form container */
+        form {
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-size: 18px;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #predicted-salary {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Salary Prediction</h1>
+    
+    <form id="prediction-form">
+        <label for="gender">Gender:</label>
+        <select id="gender" name="Gender" required>
+            <option value="">Select Gender</option>
+        </select>
+        <br><br>
+        
+        <label for="experience">Experience (in years):</label>
+        <input type="number" id="experience" name="Experience" required>
+        <br><br>
+
+        <label for="position">Position:</label>
+        <select id="position" name="Position" required>
+            <option value="">Select Position</option>
+        </select>
+        <br><br>
+
+        <input type="submit" value="Predict Salary">
+    </form>
+    
+    <h2>Predicted Salary: <span id="predicted-salary"></span></h2>
+
+    <script>
+        $(document).ready(function() {
+            // Load Gender options
+            $.ajax({
+                url: '/Gender_opt',
+                type: 'GET',
+                success: function(data) {
+                    var genderDropdown = $('#gender');
+                    $.each(data, function(index, value) {
+                        genderDropdown.append('<option value="' + value + '">' + value + '</option>');
+                    });
+                },
+                error: function() {
+                    alert('Error loading gender options');
+                }
+            });
+
+            // Load Position options
+            $.ajax({
+                url: '/Position_opt',
+                type: 'GET',
+                success: function(data) {
+                    var positionDropdown = $('#position');
+                    $.each(data, function(index, value) {
+                        positionDropdown.append('<option value="' + value + '">' + value + '</option>');
+                    });
+                },
+                error: function() {
+                    alert('Error loading position options');
+                }
+            });
+
+            // Handle form submission
+            $('#prediction-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = $(this).serialize();
+                
+                $.ajax({
+                    url: '/prediction',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#predicted-salary').text(response['pred slry']);
+                    },
+                    error: function() {
+                        alert('Error processing the prediction');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
